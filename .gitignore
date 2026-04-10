@@ -94,4 +94,5 @@ Desktop.ini
 CrashReportClient/
 
 # Local editor preferences (not needed in repo)
-*.code-workspace.idea/
+*.code-workspace
+.idea/
