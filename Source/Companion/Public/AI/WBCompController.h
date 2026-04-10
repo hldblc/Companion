@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2026 Halit Bilici. All Rights Reserved.
 
 #pragma once
 
@@ -6,20 +6,31 @@
 #include "AIController.h"
 #include "WBCompController.generated.h"
 
+class UStateTreeAIComponent;
+
+/**
+ * AWBCompController — AI Controller for the companion character.
+ *
+ * Owns the UStateTreeAIComponent which drives all AI behavior.
+ * Does NOT tick — the StateTreeAIComponent has its own tick.
+ */
 UCLASS()
 class COMPANION_API AWBCompController : public AAIController
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AWBCompController();
 
+	FORCEINLINE UStateTreeAIComponent* GetStateTreeAIComponent() const
+	{
+		return StateTreeAIComponent;
+	}
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|StateTree",
+	          meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStateTreeAIComponent> StateTreeAIComponent;
 };

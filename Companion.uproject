@@ -42,6 +42,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "StateTree",
+			"Enabled": true
+		},
+		{
 			"Name": "GameplayStateTree",
 			"Enabled": true
 		},
@@ -55,6 +59,10 @@
 		},
 		{
 			"Name": "SmartObjects",
+			"Enabled": true
+		},
+		{
+			"Name": "AIAssistant",
 			"Enabled": true
 		}
 	]

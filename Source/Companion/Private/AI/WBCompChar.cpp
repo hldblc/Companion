@@ -1,32 +1,56 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright 2026 Halit Bilici. All Rights Reserved.
 
 #include "AI/WBCompChar.h"
+#include "AI/WBCompController.h"
+#include "Net/UnrealNetwork.h"  // Required for DOREPLIFETIME
 
-
-// Sets default values
 AWBCompChar::AWBCompChar()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = AWBCompController::StaticClass();
+
+	// Enable replication on this actor.
+	// Without this, UPROPERTY(Replicated) properties won't sync.
+	bReplicates = true;
 }
 
-// Called when the game starts or when spawned
 void AWBCompChar::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void AWBCompChar::Tick(float DeltaTime)
+void AWBCompChar::SetOwnerPlayerPawn(APawn* InPlayerPawn)
 {
-	Super::Tick(DeltaTime);
+	// Server-authoritative: only the server should set this.
+	// HasAuthority() returns true on the server (or in standalone).
+	if (HasAuthority())
+	{
+		OwnerPlayerPawn = InPlayerPawn;
+
+		UE_LOG(LogTemp, Log,
+			TEXT("WBCompChar::SetOwnerPlayerPawn — %s now belongs to %s"),
+			*GetName(),
+			InPlayerPawn ? *InPlayerPawn->GetName() : TEXT("nullptr"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("WBCompChar::SetOwnerPlayerPawn — Called on client! "
+			     "Only the server should assign companion ownership."));
+	}
 }
 
-// Called to bind functionality to input
-void AWBCompChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AWBCompChar::GetLifetimeReplicatedProps(
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	// DOREPLIFETIME tells the replication system to sync this
+	// property to ALL connected clients whenever it changes.
+	// For a more optimized approach at scale, you could use
+	// DOREPLIFETIME_CONDITION with COND_OwnerOnly — but for
+	// companions that all players can see, we replicate to everyone.
+	DOREPLIFETIME(AWBCompChar, OwnerPlayerPawn);
+}

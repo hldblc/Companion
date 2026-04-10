@@ -1,26 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright 2026 Halit Bilici. All Rights Reserved.
 
 #include "AI/WBCompController.h"
+#include "Components/StateTreeAIComponent.h"
 
-
-// Sets default values
 AWBCompController::AWBCompController()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	// No tick needed — StateTreeAIComponent has its own tick.
+	PrimaryActorTick.bCanEverTick = false;
+
+	StateTreeAIComponent = CreateDefaultSubobject<UStateTreeAIComponent>(
+		TEXT("StateTreeAIComponent"));
 }
 
-// Called when the game starts or when spawned
 void AWBCompController::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
-
-// Called every frame
-void AWBCompController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

@@ -16,6 +16,7 @@ public class Companion : ModuleRules
 			"EnhancedInput",
 			"AIModule",
 			"StateTreeModule",
+			"GameplayStateTreeModule",
 			"GameplayAbilities",
 			"ModularGameplay",
 			"GameplayTasks",
