@@ -3,6 +3,8 @@
 #include "AI/WBCompChar.h"
 #include "AI/WBCompController.h"
 #include "Net/UnrealNetwork.h"  // Required for DOREPLIFETIME
+#include "Components/StateTreeAIComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AWBCompChar::AWBCompChar()
 {
@@ -19,6 +21,37 @@ AWBCompChar::AWBCompChar()
 void AWBCompChar::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Server-only: assign the owner player and start the State Tree.
+	// This runs AFTER possession, so GetController() is valid.
+	if (HasAuthority())
+	{
+		// --- Set owner player ---
+		// In PIE / standalone: use player index 0 (local player).
+		// In production multiplayer: the GameMode would call
+		// SetOwnerPlayerPawn() with the correct player before this.
+		if (!OwnerPlayerPawn)
+		{
+			APawn* LocalPlayer = UGameplayStatics::GetPlayerPawn(this, 0);
+			if (LocalPlayer)
+			{
+				SetOwnerPlayerPawn(LocalPlayer);
+			}
+		}
+
+		// --- Start the State Tree ---
+		// Now that the owner is set, the evaluator's TreeStart()
+		// will see a valid OwnerPlayerPawn. No more race condition.
+		if (AWBCompController* CompController =
+			Cast<AWBCompController>(GetController()))
+		{
+			if (UStateTreeAIComponent* STComp =
+				CompController->GetStateTreeAIComponent())
+			{
+				STComp->StartLogic();
+			}
+		}
+	}
 }
 
 void AWBCompChar::SetOwnerPlayerPawn(APawn* InPlayerPawn)
