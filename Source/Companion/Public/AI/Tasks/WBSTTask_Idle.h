@@ -43,7 +43,7 @@ struct FWBSTTaskIdleInstanceData
  * Compare to the old version which ticked every frame just to
  * increment a timer — now multiply that by 200 companions.
  */
-USTRUCT(BlueprintType, meta = (DisplayName = "Idle Task", Category = "WB|AI"))
+USTRUCT(BlueprintType, meta = (DisplayName = "Idle Task", Category = "WB|AI|Tasks"))
 struct COMPANION_API FWBSTTask_Idle : public FStateTreeTaskCommonBase
 {
 	GENERATED_BODY()
